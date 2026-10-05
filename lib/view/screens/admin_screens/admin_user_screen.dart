@@ -1,105 +1,179 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:turfix_admin/view_model/user_provider.dart';
 
 class AdminUsersScreen extends StatelessWidget {
   const AdminUsersScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey.shade50,
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(18),
+          child: Consumer<UsersProvider>(
+            builder: (context, provider, child) {
+              return TextField(
+                onChanged: provider.searchUsers,
 
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        centerTitle: true,
-        leading: IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
-        ),
-        title: const Text(
-          "Users",
-          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
-        ),
-      ),
+                decoration: InputDecoration(
+                  hintText: "Search users...",
+                  prefixIcon: const Icon(Icons.search),
 
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(18),
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: "Search users...",
-                prefixIcon: const Icon(Icons.search),
-                filled: true,
-                fillColor: Colors.white,
-                contentPadding: const EdgeInsets.symmetric(vertical: 16),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
+                  suffixIcon: provider.searchQuery.isNotEmpty
+                      ? IconButton(
+                          onPressed: provider.clearSearch,
+                          icon: const Icon(Icons.close),
+                        )
+                      : null,
+
+                  filled: true,
+                  fillColor: Colors.white,
+
+                  contentPadding: const EdgeInsets.symmetric(vertical: 16),
+
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(14),
+                    borderSide: BorderSide(color: Colors.grey.shade300),
+                  ),
+
+                  focusedBorder: const OutlineInputBorder(
+                    borderRadius: BorderRadius.all(Radius.circular(14)),
+                    borderSide: BorderSide(color: Color(0xff16A34A), width: 2),
+                  ),
                 ),
-                enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(14),
-                  borderSide: BorderSide(color: Colors.grey.shade300),
-                ),
-                focusedBorder: const OutlineInputBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(14)),
-                  borderSide: BorderSide(color: Color(0xff16A34A), width: 2),
-                ),
-              ),
-            ),
+              );
+            },
           ),
+        ),
 
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 18),
-              children: const [
-                UserTile(
-                  image: "assets/images/profile.jpg",
-                  name: "Aslam Muhammed",
-                  phone: "+91 98765 43210",
-                ),
+        Expanded(
+          child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+            stream: FirebaseFirestore.instance.collection('users').snapshots(),
 
-                SizedBox(height: 12),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
 
-                UserTile(
-                  image: "assets/images/profile.jpg",
-                  name: "Zaid Khan",
-                  phone: "+91 91234 56789",
-                ),
+              if (snapshot.hasError) {
+                return const Center(child: Text('Something went wrong'));
+              }
 
-                SizedBox(height: 12),
+              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                return const Center(child: Text('No users found'));
+              }
 
-                UserTile(
-                  image: "assets/images/profile.jpg",
-                  name: "Arjun Nair",
-                  phone: "+91 99887 66554",
-                ),
+              return Consumer<UsersProvider>(
+                builder: (context, provider, child) {
+                  final users = provider.filterUsers(snapshot.data!.docs);
 
-                SizedBox(height: 12),
+                  if (users.isEmpty) {
+                    return const Center(
+                      child: Text(
+                        'No users found',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                    );
+                  }
 
-                UserTile(
-                  image: "assets/images/profile.jpg",
-                  name: "Ramees KP",
-                  phone: "+91 88997 77665",
-                ),
+                  return ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 18),
+                    itemCount: users.length,
 
-                SizedBox(height: 12),
+                    itemBuilder: (context, index) {
+                      final user = users[index].data();
 
-                UserTile(
-                  image: "assets/images/profile.jpg",
-                  name: "Ameen Ali",
-                  phone: "+91 98700 12345",
-                ),
-
-                SizedBox(height: 30),
-              ],
-            ),
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: UserTile(
+                          image: user['image']?.toString() ?? '',
+                          name: user['name']?.toString() ?? 'No name',
+                          phone: user['phone']?.toString() ?? 'No phone number',
+                        ),
+                      );
+                    },
+                  );
+                },
+              );
+            },
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
+
+// import 'package:flutter/material.dart';
+
+// class AdminUsersScreen extends StatelessWidget {
+//   const AdminUsersScreen({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return Scaffold(
+//       backgroundColor: Colors.grey.shade50,
+
+//       appBar: AppBar(
+//         backgroundColor: Colors.white,
+//         elevation: 0,
+//         centerTitle: true,
+//         leading: IconButton(
+//           onPressed: () {},
+//           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
+//         ),
+//         title: const Text(
+//           "Users",
+//           style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
+//         ),
+//       ),
+
+//       body: Column(
+//         children: [
+//           Padding(
+//             padding: const EdgeInsets.all(18),
+//             child: TextField(
+//               decoration: InputDecoration(
+//                 hintText: "Search users...",
+//                 prefixIcon: const Icon(Icons.search),
+//                 filled: true,
+//                 fillColor: Colors.white,
+//                 contentPadding: const EdgeInsets.symmetric(vertical: 16),
+//                 border: OutlineInputBorder(
+//                   borderRadius: BorderRadius.circular(14),
+//                   borderSide: BorderSide(color: Colors.grey.shade300),
+//                 ),
+//                 enabledBorder: OutlineInputBorder(
+//                   borderRadius: BorderRadius.circular(14),
+//                   borderSide: BorderSide(color: Colors.grey.shade300),
+//                 ),
+//                 focusedBorder: const OutlineInputBorder(
+//                   borderRadius: BorderRadius.all(Radius.circular(14)),
+//                   borderSide: BorderSide(color: Color(0xff16A34A), width: 2),
+//                 ),
+//               ),
+//             ),
+//           ),
+
+//           Expanded(
+//             child: ListView.builder(
+//               itemCount: 3,
+//               itemBuilder: (context, index) {
+//                 return UserTile(image: '', name: 'name', phone: 'phone');
+//               },
+//             ),
+//           ),
+//         ],
+//       ),
+//     );
+//   }
+// }
 
 class UserTile extends StatelessWidget {
   final String image;
