@@ -67,4 +67,30 @@ class AdminTurfsProvider extends ChangeNotifier {
       return getTurfStatus(turf.data()) == status;
     }).length;
   }
+
+  Future<bool> verifyTurf(String turfId) async {
+    try {
+      await FirebaseFirestore.instance.collection('turfs').doc(turfId).update({
+        'isVerified': 1,
+      });
+
+      return true;
+    } catch (e) {
+      debugPrint('Verify turf error: $e');
+      return false;
+    }
+  }
+
+  Future<bool> rejectTurf(String turfId) async {
+    try {
+      await FirebaseFirestore.instance.collection('turfs').doc(turfId).update({
+        'isVerified': -1,
+      });
+
+      return true;
+    } catch (e) {
+      debugPrint('Reject turf error: $e');
+      return false;
+    }
+  }
 }

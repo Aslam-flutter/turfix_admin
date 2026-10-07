@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:turfix_admin/view/screens/admin_screens/user_details_screen.dart';
 import 'package:turfix_admin/view_model/user_provider.dart';
 
 class AdminUsersScreen extends StatelessWidget {
@@ -89,13 +90,26 @@ class AdminUsersScreen extends StatelessWidget {
 
                     itemBuilder: (context, index) {
                       final user = users[index].data();
+                      final userr = users[index];
 
                       return Padding(
                         padding: const EdgeInsets.only(bottom: 12),
-                        child: UserTile(
-                          image: user['image']?.toString() ?? '',
-                          name: user['name']?.toString() ?? 'No name',
-                          phone: user['phone']?.toString() ?? 'No phone number',
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    UserDetailsScreen(user: userr),
+                              ),
+                            );
+                          },
+                          child: UserTile(
+                            image: user['image']?.toString() ?? '',
+                            name: user['name']?.toString() ?? 'No name',
+                            phone:
+                                user['phone']?.toString() ?? 'No phone number',
+                          ),
                         ),
                       );
                     },

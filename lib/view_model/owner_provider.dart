@@ -5,6 +5,8 @@ class AdminOwnersProvider extends ChangeNotifier {
   String searchQuery = '';
   String selectedStatus = 'All';
 
+  bool isUpdating = false;
+
   void searchOwners(String value) {
     searchQuery = value.trim().toLowerCase();
     notifyListeners();
@@ -24,12 +26,50 @@ class AdminOwnersProvider extends ChangeNotifier {
     switch (isAccepted) {
       case 1:
         return 'Approved';
-
       case -1:
         return 'Rejected';
-
       default:
         return 'Pending';
+    }
+  }
+
+  // Accept owner
+  Future<bool> acceptOwner(String ownerId) async {
+    try {
+      isUpdating = true;
+      notifyListeners();
+
+      await FirebaseFirestore.instance.collection('owners').doc(ownerId).update(
+        {'isAccepted': 1},
+      );
+
+      return true;
+    } catch (e) {
+      debugPrint('Accept owner error: $e');
+      return false;
+    } finally {
+      isUpdating = false;
+      notifyListeners();
+    }
+  }
+
+  // Reject owner
+  Future<bool> rejectOwner(String ownerId) async {
+    try {
+      isUpdating = true;
+      notifyListeners();
+
+      await FirebaseFirestore.instance.collection('owners').doc(ownerId).update(
+        {'isAccepted': -1},
+      );
+
+      return true;
+    } catch (e) {
+      debugPrint('Reject owner error: $e');
+      return false;
+    } finally {
+      isUpdating = false;
+      notifyListeners();
     }
   }
 
@@ -45,7 +85,7 @@ class AdminOwnersProvider extends ChangeNotifier {
 
       final email = data['email']?.toString().toLowerCase() ?? '';
 
-      final ownerSearchMatch =
+      final searchMatch =
           name.contains(searchQuery) ||
           phone.contains(searchQuery) ||
           email.contains(searchQuery);
@@ -56,7 +96,7 @@ class AdminOwnersProvider extends ChangeNotifier {
 
       final statusMatch = selectedStatus == 'All' || status == selectedStatus;
 
-      return ownerSearchMatch && statusMatch;
+      return searchMatch && statusMatch;
     }).toList();
   }
 

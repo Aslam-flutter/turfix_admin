@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:turfix_admin/view/screens/admin_screens/owner_details_screen.dart';
 import 'package:turfix_admin/view_model/owner_provider.dart';
 
 class AdminOwnersScreen extends StatelessWidget {
@@ -182,23 +183,35 @@ class AdminOwnersScreen extends StatelessWidget {
 
                       itemBuilder: (context, index) {
                         final owner = owners[index].data();
+                        final ownerr = owners[index];
 
                         final isAccepted =
                             (owner['isAccepted'] as num?)?.toInt() ?? 0;
 
                         final status = provider.getStatus(isAccepted);
 
-                        return OwnerTile(
-                          image: owner['image']?.toString() ?? '',
+                        return InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    OwnerDetailsScreen(owner: ownerr),
+                              ),
+                            );
+                          },
+                          child: OwnerTile(
+                            image: owner['image']?.toString() ?? '',
 
-                          ownerName: owner['name']?.toString() ?? 'No name',
+                            ownerName: owner['name']?.toString() ?? 'No name',
 
-                          phone: owner['phone']?.toString() ?? 'No phone',
+                            phone: owner['phone']?.toString() ?? 'No phone',
 
-                          turfName: '',
+                            turfName: '',
 
-                          // turfName: owner['turfName']?.toString() ?? 'No turf',
-                          status: status,
+                            // turfName: owner['turfName']?.toString() ?? 'No turf',
+                            status: status,
+                          ),
                         );
                       },
                     );
@@ -396,96 +409,90 @@ class OwnerTile extends StatelessWidget {
         statusColor = Colors.orange;
     }
 
-    return InkWell(
-      borderRadius: BorderRadius.circular(18),
-      onTap: () {
-        // Navigate to Owner Details
-      },
-      child: Container(
-        padding: const EdgeInsets.all(14),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: Colors.grey.shade200),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(.03),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-        child: Row(
-          children: [
-            CircleAvatar(radius: 28, backgroundImage: AssetImage(image)),
+    return Container(
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: Colors.grey.shade200),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(.03),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(radius: 28, backgroundImage: AssetImage(image)),
 
-            const SizedBox(width: 14),
+          const SizedBox(width: 14),
 
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    ownerName,
-                    style: const TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-
-                  const SizedBox(height: 4),
-
-                  Text(
-                    phone,
-                    style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
-                  ),
-
-                  const SizedBox(height: 6),
-
-                  Text(
-                    turfName,
-                    style: TextStyle(
-                      color: Colors.grey.shade700,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
-                  ),
-                  decoration: BoxDecoration(
-                    color: statusColor.withOpacity(.12),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Text(
-                    status,
-                    style: TextStyle(
-                      color: statusColor,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
-                    ),
+                Text(
+                  ownerName,
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
                   ),
                 ),
 
-                const SizedBox(height: 16),
+                const SizedBox(height: 4),
 
-                Icon(
-                  Icons.arrow_forward_ios,
-                  size: 18,
-                  color: Colors.grey.shade400,
+                Text(
+                  phone,
+                  style: TextStyle(color: Colors.grey.shade600, fontSize: 14),
+                ),
+
+                const SizedBox(height: 6),
+
+                Text(
+                  turfName,
+                  style: TextStyle(
+                    color: Colors.grey.shade700,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 5,
+                ),
+                decoration: BoxDecoration(
+                  color: statusColor.withOpacity(.12),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                child: Text(
+                  status,
+                  style: TextStyle(
+                    color: statusColor,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 12,
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 16),
+
+              Icon(
+                Icons.arrow_forward_ios,
+                size: 18,
+                color: Colors.grey.shade400,
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

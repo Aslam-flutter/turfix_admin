@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:turfix_admin/view/screens/admin_screens/turf_details_screen.dart';
 import 'package:turfix_admin/view_model/turf_provider.dart';
 
 class AdminTurfsScreen extends StatelessWidget {
@@ -185,6 +186,7 @@ class AdminTurfsScreen extends StatelessWidget {
 
                       itemBuilder: (context, index) {
                         final turf = turfs[index].data();
+                        final turff = turfs[index];
 
                         final images = List<String>.from(
                           turf['turfImages'] ?? [],
@@ -194,16 +196,27 @@ class AdminTurfsScreen extends StatelessWidget {
 
                         final status = provider.getTurfStatus(turf);
 
-                        return TurfManagementTile(
-                          image: image,
+                        return InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    AdminTurfDetailsScreen(turf: turff),
+                              ),
+                            );
+                          },
+                          child: TurfManagementTile(
+                            image: image,
 
-                          turfName:
-                              turf['turfName']?.toString() ?? 'No turf name',
+                            turfName:
+                                turf['turfName']?.toString() ?? 'No turf name',
 
-                          location:
-                              turf['location']?.toString() ?? 'No location',
+                            location:
+                                turf['location']?.toString() ?? 'No location',
 
-                          status: status,
+                            status: status,
+                          ),
                         );
                       },
                     );
@@ -288,133 +301,118 @@ class TurfManagementTile extends StatelessWidget {
       statusColor = Colors.red;
     }
 
-    return InkWell(
-      borderRadius: BorderRadius.circular(18),
+    return Container(
+      padding: const EdgeInsets.all(14),
 
-      onTap: () {
-        // Open Turf Details
-      },
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(18),
+        border: Border.all(color: Colors.grey.shade200),
 
-      child: Container(
-        padding: const EdgeInsets.all(14),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(.03),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
 
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
-          border: Border.all(color: Colors.grey.shade200),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
 
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(.03),
-              blurRadius: 8,
-              offset: const Offset(0, 3),
-            ),
-          ],
-        ),
-
-        child: Row(
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-
-              child: image.isEmpty
-                  ? Container(
-                      width: 75,
-                      height: 75,
-                      color: Colors.grey.shade200,
-                      child: const Icon(
-                        Icons.sports_soccer,
-                        color: Colors.grey,
-                      ),
-                    )
-                  : Image.network(
-                      image,
-                      width: 75,
-                      height: 75,
-                      fit: BoxFit.cover,
-                    ),
-            ),
-
-            const SizedBox(width: 14),
-
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-
-                children: [
-                  Text(
-                    turfName,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-
-                    style: const TextStyle(
-                      fontSize: 17,
-                      fontWeight: FontWeight.bold,
-                    ),
+            child: image.isEmpty
+                ? Container(
+                    width: 75,
+                    height: 75,
+                    color: Colors.grey.shade200,
+                    child: const Icon(Icons.sports_soccer, color: Colors.grey),
+                  )
+                : Image.network(
+                    image,
+                    width: 75,
+                    height: 75,
+                    fit: BoxFit.cover,
                   ),
+          ),
 
-                  const SizedBox(height: 6),
+          const SizedBox(width: 14),
 
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.location_on_outlined,
-                        color: Colors.grey.shade600,
-                        size: 16,
-                      ),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
 
-                      const SizedBox(width: 4),
+              children: [
+                Text(
+                  turfName,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
 
-                      Expanded(
-                        child: Text(
-                          location,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 17,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
 
-                          style: TextStyle(
-                            color: Colors.grey.shade600,
-                            fontSize: 14,
-                          ),
+                const SizedBox(height: 6),
+
+                Row(
+                  children: [
+                    Icon(
+                      Icons.location_on_outlined,
+                      color: Colors.grey.shade600,
+                      size: 16,
+                    ),
+
+                    const SizedBox(width: 4),
+
+                    Expanded(
+                      child: Text(
+                        location,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+
+                        style: TextStyle(
+                          color: Colors.grey.shade600,
+                          fontSize: 14,
                         ),
                       ),
-                    ],
+                    ),
+                  ],
+                ),
+
+                const SizedBox(height: 10),
+
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
                   ),
 
-                  const SizedBox(height: 10),
+                  decoration: BoxDecoration(
+                    color: statusColor.withOpacity(.12),
 
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 10,
-                      vertical: 5,
-                    ),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
 
-                    decoration: BoxDecoration(
-                      color: statusColor.withOpacity(.12),
+                  child: Text(
+                    status,
 
-                      borderRadius: BorderRadius.circular(20),
-                    ),
-
-                    child: Text(
-                      status,
-
-                      style: TextStyle(
-                        color: statusColor,
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                      ),
+                    style: TextStyle(
+                      color: statusColor,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
+          ),
 
-            Icon(
-              Icons.arrow_forward_ios,
-              size: 18,
-              color: Colors.grey.shade400,
-            ),
-          ],
-        ),
+          Icon(Icons.arrow_forward_ios, size: 18, color: Colors.grey.shade400),
+        ],
       ),
     );
   }
