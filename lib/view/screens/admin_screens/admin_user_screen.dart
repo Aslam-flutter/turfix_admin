@@ -9,185 +9,145 @@ class AdminUsersScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(18),
-          child: Consumer<UsersProvider>(
-            builder: (context, provider, child) {
-              return TextField(
-                onChanged: provider.searchUsers,
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        centerTitle: true,
 
-                decoration: InputDecoration(
-                  hintText: "Search users...",
-                  prefixIcon: const Icon(Icons.search),
-
-                  suffixIcon: provider.searchQuery.isNotEmpty
-                      ? IconButton(
-                          onPressed: provider.clearSearch,
-                          icon: const Icon(Icons.close),
-                        )
-                      : null,
-
-                  filled: true,
-                  fillColor: Colors.white,
-
-                  contentPadding: const EdgeInsets.symmetric(vertical: 16),
-
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-
-                  enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(14),
-                    borderSide: BorderSide(color: Colors.grey.shade300),
-                  ),
-
-                  focusedBorder: const OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(14)),
-                    borderSide: BorderSide(color: Color(0xff16A34A), width: 2),
-                  ),
-                ),
-              );
-            },
-          ),
+        leading: IconButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
         ),
 
-        Expanded(
-          child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-            stream: FirebaseFirestore.instance.collection('users').snapshots(),
+        title: const Text(
+          "Users",
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
+        ),
+      ),
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(18),
+            child: Consumer<UsersProvider>(
+              builder: (context, provider, child) {
+                return TextField(
+                  onChanged: provider.searchUsers,
 
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
+                  decoration: InputDecoration(
+                    hintText: "Search users...",
+                    prefixIcon: const Icon(Icons.search),
 
-              if (snapshot.hasError) {
-                return const Center(child: Text('Something went wrong'));
-              }
+                    suffixIcon: provider.searchQuery.isNotEmpty
+                        ? IconButton(
+                            onPressed: provider.clearSearch,
+                            icon: const Icon(Icons.close),
+                          )
+                        : null,
 
-              if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                return const Center(child: Text('No users found'));
-              }
+                    filled: true,
+                    fillColor: Colors.white,
 
-              return Consumer<UsersProvider>(
-                builder: (context, provider, child) {
-                  final users = provider.filterUsers(snapshot.data!.docs);
+                    contentPadding: const EdgeInsets.symmetric(vertical: 16),
 
-                  if (users.isEmpty) {
-                    return const Center(
-                      child: Text(
-                        'No users found',
-                        style: TextStyle(color: Colors.grey),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(14),
+                      borderSide: BorderSide(color: Colors.grey.shade300),
+                    ),
+
+                    focusedBorder: const OutlineInputBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(14)),
+                      borderSide: BorderSide(
+                        color: Color(0xff16A34A),
+                        width: 2,
                       ),
-                    );
-                  }
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
 
-                  return ListView.builder(
-                    padding: const EdgeInsets.symmetric(horizontal: 18),
-                    itemCount: users.length,
+          Expanded(
+            child: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+              stream: FirebaseFirestore.instance
+                  .collection('users')
+                  .snapshots(),
 
-                    itemBuilder: (context, index) {
-                      final user = users[index].data();
-                      final userr = users[index];
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-                      return Padding(
-                        padding: const EdgeInsets.only(bottom: 12),
-                        child: InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    UserDetailsScreen(user: userr),
-                              ),
-                            );
-                          },
-                          child: UserTile(
-                            image: user['image']?.toString() ?? '',
-                            name: user['name']?.toString() ?? 'No name',
-                            phone:
-                                user['phone']?.toString() ?? 'No phone number',
-                          ),
+                if (snapshot.hasError) {
+                  return const Center(child: Text('Something went wrong'));
+                }
+
+                if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                  return const Center(child: Text('No users found'));
+                }
+
+                return Consumer<UsersProvider>(
+                  builder: (context, provider, child) {
+                    final users = provider.filterUsers(snapshot.data!.docs);
+
+                    if (users.isEmpty) {
+                      return const Center(
+                        child: Text(
+                          'No users found',
+                          style: TextStyle(color: Colors.grey),
                         ),
                       );
-                    },
-                  );
-                },
-              );
-            },
+                    }
+
+                    return ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 18),
+                      itemCount: users.length,
+
+                      itemBuilder: (context, index) {
+                        final user = users[index].data();
+                        final userr = users[index];
+
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 12),
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      UserDetailsScreen(user: userr),
+                                ),
+                              );
+                            },
+                            child: UserTile(
+                              image: user['image']?.toString() ?? '',
+                              name: user['name']?.toString() ?? 'No name',
+                              phone:
+                                  user['phone']?.toString() ??
+                                  'No phone number',
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                );
+              },
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
-
-// import 'package:flutter/material.dart';
-
-// class AdminUsersScreen extends StatelessWidget {
-//   const AdminUsersScreen({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Colors.grey.shade50,
-
-//       appBar: AppBar(
-//         backgroundColor: Colors.white,
-//         elevation: 0,
-//         centerTitle: true,
-//         leading: IconButton(
-//           onPressed: () {},
-//           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
-//         ),
-//         title: const Text(
-//           "Users",
-//           style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
-//         ),
-//       ),
-
-//       body: Column(
-//         children: [
-//           Padding(
-//             padding: const EdgeInsets.all(18),
-//             child: TextField(
-//               decoration: InputDecoration(
-//                 hintText: "Search users...",
-//                 prefixIcon: const Icon(Icons.search),
-//                 filled: true,
-//                 fillColor: Colors.white,
-//                 contentPadding: const EdgeInsets.symmetric(vertical: 16),
-//                 border: OutlineInputBorder(
-//                   borderRadius: BorderRadius.circular(14),
-//                   borderSide: BorderSide(color: Colors.grey.shade300),
-//                 ),
-//                 enabledBorder: OutlineInputBorder(
-//                   borderRadius: BorderRadius.circular(14),
-//                   borderSide: BorderSide(color: Colors.grey.shade300),
-//                 ),
-//                 focusedBorder: const OutlineInputBorder(
-//                   borderRadius: BorderRadius.all(Radius.circular(14)),
-//                   borderSide: BorderSide(color: Color(0xff16A34A), width: 2),
-//                 ),
-//               ),
-//             ),
-//           ),
-
-//           Expanded(
-//             child: ListView.builder(
-//               itemCount: 3,
-//               itemBuilder: (context, index) {
-//                 return UserTile(image: '', name: 'name', phone: 'phone');
-//               },
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-// }
 
 class UserTile extends StatelessWidget {
   final String image;
@@ -219,7 +179,11 @@ class UserTile extends StatelessWidget {
       ),
       child: Row(
         children: [
-          CircleAvatar(radius: 28, backgroundImage: AssetImage(image)),
+          CircleAvatar(
+            radius: 28,
+            // backgroundImage: AssetImage(image),
+            child: Icon(Icons.person),
+          ),
 
           const SizedBox(width: 16),
 

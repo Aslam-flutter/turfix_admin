@@ -53,7 +53,11 @@ class AdminDashboardScreen extends StatelessWidget {
                                   ConnectionState.waiting) {
                             return const SizedBox(
                               height: 250,
-                              child: Center(child: CircularProgressIndicator()),
+                              child: Center(
+                                child: CircularProgressIndicator(
+                                  color: Color(0xff16A34A),
+                                ),
+                              ),
                             );
                           }
 
@@ -122,7 +126,9 @@ class AdminDashboardScreen extends StatelessWidget {
 
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
+                return const Center(
+                  child: CircularProgressIndicator(color: Color(0xff16A34A)),
+                );
               }
 
               if (snapshot.hasError) {
@@ -229,121 +235,6 @@ class AdminDashboardScreen extends StatelessWidget {
   }
 }
 
-// import 'package:flutter/material.dart';
-
-// class AdminDashboardScreen extends StatelessWidget {
-//   const AdminDashboardScreen({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       backgroundColor: Colors.grey.shade50,
-
-//       appBar: AppBar(
-//         backgroundColor: Colors.white,
-//         elevation: 0,
-//         centerTitle: true,
-//         leading: IconButton(
-//           onPressed: () {},
-//           icon: const Icon(Icons.arrow_back_ios_new, color: Colors.black),
-//         ),
-//         title: const Text(
-//           "Admin Dashboard",
-//           style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600),
-//         ),
-//       ),
-
-//       body: ListView(
-//         padding: const EdgeInsets.all(18),
-//         children: [
-//           GridView.count(
-//             crossAxisCount: 2,
-//             shrinkWrap: true,
-//             physics: const NeverScrollableScrollPhysics(),
-//             mainAxisSpacing: 14,
-//             crossAxisSpacing: 14,
-//             childAspectRatio: 1.1,
-//             children: const [
-//               DashboardStatCard(
-//                 title: "Total Users",
-//                 value: "452",
-//                 icon: Icons.people,
-//                 color: Colors.blue,
-//               ),
-
-//               DashboardStatCard(
-//                 title: "Total Owners",
-//                 value: "128",
-//                 icon: Icons.store,
-//                 color: Colors.red,
-//               ),
-
-//               DashboardStatCard(
-//                 title: "Total Turfs",
-//                 value: "266",
-//                 icon: Icons.stadium,
-//                 color: Colors.orange,
-//               ),
-
-//               DashboardStatCard(
-//                 title: "Total Bookings",
-//                 value: "1,245",
-//                 icon: Icons.calendar_month,
-//                 color: Colors.green,
-//               ),
-//             ],
-//           ),
-
-//           const SizedBox(height: 28),
-
-//           const Text(
-//             "Recent Bookings",
-//             style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-//           ),
-
-//           const SizedBox(height: 18),
-
-//           const RecentBookingTile(
-//             name: "Aslam Muhammed",
-//             turf: "Green Field Arena",
-//             date: "20 May 2026",
-//             amount: "₹1200",
-//           ),
-
-//           const SizedBox(height: 12),
-
-//           const RecentBookingTile(
-//             name: "Zaid Khan",
-//             turf: "Kick Off Turf",
-//             date: "20 May 2026",
-//             amount: "₹2000",
-//           ),
-
-//           const SizedBox(height: 12),
-
-//           const RecentBookingTile(
-//             name: "Ayaan Ali",
-//             turf: "Sports Hub Turf",
-//             date: "19 May 2026",
-//             amount: "₹1500",
-//           ),
-
-//           const SizedBox(height: 12),
-
-//           const RecentBookingTile(
-//             name: "Rahul Das",
-//             turf: "Victory Ground",
-//             date: "19 May 2026",
-//             amount: "₹1000",
-//           ),
-
-//           const SizedBox(height: 20),
-//         ],
-//       ),
-//     );
-//   }
-// }
-
 class DashboardStatCard extends StatelessWidget {
   final String title;
   final String value;
@@ -441,7 +332,8 @@ class RecentBookingTile extends StatelessWidget {
         children: [
           const CircleAvatar(
             radius: 28,
-            backgroundImage: AssetImage("assets/images/profile.jpg"),
+            child: Icon(Icons.person),
+            // backgroundImage: AssetImage("assets/images/profile.jpg"),
           ),
 
           const SizedBox(width: 14),

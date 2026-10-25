@@ -1,7 +1,7 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 import 'package:turfix_admin/view/auth/login_screen.dart';
@@ -13,7 +13,7 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Timer(const Duration(seconds: 3), () {
+      Timer(const Duration(seconds: 1), () {
         if (!context.mounted) return;
 
         Navigator.pushAndRemoveUntil(
@@ -62,7 +62,10 @@ class AuthGate extends StatelessWidget {
     }
 
     // Admin exists
-    return const AdminMainScreen();
+    if (doc.exists) {
+      return AdminMainScreen();
+    }
+    return LoginScreen();
   }
 
   @override
@@ -73,7 +76,9 @@ class AuthGate extends StatelessWidget {
         // Loading
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
+            body: Center(
+              child: CircularProgressIndicator(color: Color(0xff16A34A)),
+            ),
           );
         }
 
@@ -92,34 +97,3 @@ class AuthGate extends StatelessWidget {
     );
   }
 }
-
-// import 'dart:async';
-
-// import 'package:flutter/material.dart';
-// import 'package:turfix_admin/view/auth/login_screen.dart';
-// class SplashScreen extends StatelessWidget {
-//   const SplashScreen({super.key});
-
-//   @override
-//   Widget build(BuildContext context) {
-//     Timer(Duration(seconds: 3), () {
-//       Navigator.pushAndRemoveUntil(
-//         context,
-//         MaterialPageRoute(builder: (context) => LoginScreen()),
-//         (route) => false,
-//       );
-//     });
-//     return Scaffold(
-//       backgroundColor: Colors.black,
-//       body: Container(
-//         decoration: BoxDecoration(
-//           image: DecorationImage(
-//             image: AssetImage("assets/images/turfix image.jpeg"),
-//             fit: BoxFit.cover,
-//           ),
-//         ),
-//         // child: Image.asset("assets/images/turfixImage.jpeg", fit: BoxFit.cover)
-//       ),
-//     );
-//   }
-// }

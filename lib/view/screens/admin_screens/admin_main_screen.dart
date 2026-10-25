@@ -82,13 +82,6 @@ class _AdminMainScreenState extends State<AdminMainScreen> {
                 label: "Bookings",
                 color: primary,
               ),
-
-              // navItem(
-              //   index: 4,
-              //   icon: Icons.person_outline,
-              //   label: "Profile",
-              //   color: primary,
-              // ),
             ],
           ),
         ),
